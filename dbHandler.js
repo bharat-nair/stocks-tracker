@@ -1,5 +1,8 @@
+const { initDb } = require('./initDb');
+
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('stocks.db');
+initDb(db);
 
 const DAYS = {
     0: 'sun',
