@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+    <title>Stocks Tracker</title>
+</head>
+
+<body data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">StocksTracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Today</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="all.html">All</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <h1 class="display-5 text-center m-4">Edit Trend for <span id="stock-header"></span></h1>
+        <form method="post">
+            <div class="mb-3">
+                <label for="stock-name" class="form-label">Stock Name</label>
+                <input type="text" class="form-control" id="stock-name" aria-describedby="stock-name" name="stock-name"
+                    placeholder="Enter Name" value="">
+            </div>
+            <div class="mb-3">
+                <label for="stock-code" class="form-label">Stock Code</label>
+                <input type="text" class="form-control" id="stock-code" name="stock-code" placeholder="Enter Code"
+                    value="">
+            </div>
+
+            <fieldset>
+                <input type="checkbox" class="btn-check" name="days" id="day-1">
+                <label class="btn btn-outline-primary border border-light" for="day-1">Monday</label>
+                <input type="checkbox" class="btn-check" name="days" id="day-2">
+                <label class="btn btn-outline-primary border border-light" for="day-2">Tuesday</label>
+                <input type="checkbox" class="btn-check" name="days" id="day-3">
+                <label class="btn btn-outline-primary border border-light" for="day-3">Wednesday</label>
+                <input type="checkbox" class="btn-check" name="days" id="day-4">
+                <label class="btn btn-outline-primary border border-light" for="day-4">Thursday</label>
+                <input type="checkbox" class="btn-check" name="days" id="day-5">
+                <label class="btn btn-outline-primary border border-light" for="day-5">Friday</label>
+                <input type="checkbox" class="btn-check" name="days" id="day-6">
+                <label class="btn btn-outline-primary border border-light" for="day-6">Saturday</label>
+                <input type="checkbox" class="btn-check" name="days" id="day-7">
+                <label class="btn btn-outline-primary border border-light" for="day-7">Sunday</label>
+            </fieldset>
+            <button type="button" onclick="submitForm()" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+    <script>
+        const ipcRenderer = require("electron").ipcRenderer;
+
+        const stockId = new URLSearchParams(document.location.search).get("stockId");
+        
+        ipcRenderer.send("crud", {
+            table: "stocks",
+            operation: "get",
+            data: {
+                stockId,
+            }
+        });
+
+        ipcRenderer.on('data', (event, data) => {
+            console.log(data)
+            document.getElementById("stock-header").innerHTML = data.stockName;
+            document.getElementById("stock-name").value = data.stockName;
+            document.getElementById("stock-code").value = data.stockCode;
+            document.getElementById("day-1").checked = data.mon ? true : false;
+            document.getElementById("day-2").checked = data.mon ? true : false;
+            document.getElementById("day-3").checked = data.mon ? true : false;
+            document.getElementById("day-4").checked = data.mon ? true : false;
+            document.getElementById("day-5").checked = data.mon ? true : false;
+        })
+
+
+        function submitForm() {
+
+            const formData = {
+                table: "stocks",
+                operation: stockId ? "update" : "insert",
+                data: {
+                    stockId,
+                    stockName: document.getElementById("stock-name").value,
+                    stockCode: document.getElementById("stock-code").value,
+                    mon: document.getElementById("day-1").checked ? 1 : 0,
+                    tue: document.getElementById("day-2").checked ? 1 : 0,
+                    wed: document.getElementById("day-3").checked ? 1 : 0,
+                    thu: document.getElementById("day-4").checked ? 1 : 0,
+                    fri: document.getElementById("day-5").checked ? 1 : 0,
+                }
+            }
+            ipcRenderer.send("crud", formData);
+            location.href = "index.html";
+        }
+    </script>
+</body>
+
+</html>

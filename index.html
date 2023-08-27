@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+        crossorigin="anonymous"></script>
+    <title>Stocks Tracker</title>
+</head>
+
+<body data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">StocksTracker</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Today</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="all.html">All</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-3">
+        <h1 class="display-5 text-center m-4">Trending Stocks <i id="date-today"></i></h1>
+        <table class="table table-bordered dark">
+            <thead>
+                <tr align="center">
+                    <th>Sl. No.</th>
+                    <th>Stock Name</th>
+                    <th colspan="7">Trending Days</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const ipcRenderer = require("electron").ipcRenderer;
+        ipcRenderer.send("crud", {
+            table: "stocks",
+            operation: "list",
+            data: {
+                type: "today",
+            }
+        });
+
+        ipcRenderer.on('data', (event, data) => {
+            
+            document.getElementById("table-body").innerHTML = ``;
+            document.getElementById("date-today").innerHTML = data.today.toLocaleDateString();
+
+            for(let [i, row] of data.stocks.entries()){
+                document.getElementById("table-body").innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${row.stockName} (${row.stockCode}) <a class="btn btn-primary btn-sm" href="update.html?stockId=${row.stockId}">Edit</a></td>
+                        <td ${row.days.mon ? "class='bg-success'" : ''}></td>
+                        <td ${row.days.tue ? "class='bg-success'" : ''}></td>
+                        <td ${row.days.wed ? "class='bg-success'" : ''}></td>
+                        <td ${row.days.thu ? "class='bg-success'" : ''}></td>
+                        <td ${row.days.fri ? "class='bg-success'" : ''}></td>
+                    </tr>
+                `
+            }
+        });
+    </script>
+</body>
+
+</html>

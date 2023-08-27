@@ -1,0 +1,28 @@
+{
+  "name": "stocks-tracker",
+  "version": "0.1.0",
+  "description": "A stocks pattern tracking app",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "nodemon --exec electron .",
+    "rebuild": "electron-rebuild -f -w better-sqlite3",
+    "install": "node initDb.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Bharat Nair",
+  "license": "ISC",
+  "dependencies": {
+    "electron-packager": "^17.1.2",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^3.3.0",
+    "electron": "^26.1.0",
+    "nodemon": "^3.0.1"
+  }
+}
